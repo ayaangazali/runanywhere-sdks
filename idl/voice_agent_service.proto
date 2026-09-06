@@ -107,7 +107,7 @@ message VoiceAgentComposeConfig {
     optional string tts_voice_id   = 6;
 
     optional VADConfiguration vad_config = 7;
-    // NOT HONORED YET either: make_voice_llm_options() builds the turn options
+    // NOT HONORED YET either: make_voice_llm_options() builds the voice LLM options
     // from compile-time constants and takes no argument, so none of these
     // reach the LLM. The note on `instructions` below says
     // llm_generation.system_prompt is ignored here, which is true, but so is
