@@ -142,19 +142,26 @@ test('embeddings: the ONNX engine honours normalize=NONE',
   { timeout: 600000, ...skipFor(EMBED_ID) },
   async () => {
     await withModels([EMBED_ID], async (sdk) => {
-      const [l2] = await sdk.embeddings.embed(['normalize me'], { normalize: 'L2' });
-      const [raw] = await sdk.embeddings.embed(['normalize me'], { normalize: 'NONE' });
-
       const magnitude = (v: number[] | Float32Array): number =>
         Math.sqrt(Array.from(v).reduce((n, x) => n + x * x, 0));
-      assert.ok(
-        Math.abs(magnitude(l2.vector) - 1) < 0.01,
-        `L2 vectors are unit length: ${magnitude(l2.vector)}`
-      );
-      assert.ok(
-        Math.abs(magnitude(raw.vector) - 1) > 0.01,
-        `normalize=NONE returns the raw pooled vector: ${magnitude(raw.vector)}`
-      );
+      for (const texts of [['normalize me'], ['normalize me', 'and me too']]) {
+        const l2 = await sdk.embeddings.embed(texts, { normalize: 'L2' });
+        const raw = await sdk.embeddings.embed(texts, { normalize: 'NONE' });
+        texts.forEach((_, i) => {
+          assert.ok(
+            Math.abs(magnitude(l2[i].vector) - 1) < 0.01,
+            `L2 vectors are unit length: ${magnitude(l2[i].vector)}`
+          );
+          assert.ok(
+            Math.abs(magnitude(raw[i].vector) - 1) > 0.01,
+            `normalize=NONE returns the raw pooled vector: ${magnitude(raw[i].vector)}`
+          );
+          assert.ok(
+            cosine(raw[i].vector, l2[i].vector) > 0.99,
+            `normalize=NONE points the same way as L2: ${cosine(raw[i].vector, l2[i].vector)}`
+          );
+        });
+      }
     });
   }
 );
