@@ -288,5 +288,5 @@ Key test categories: core infrastructure, plugin registry/routing, graph schedul
 ## CI/CD
 
 GitHub only runs the repo-root `.github/workflows/`, so `core/` has none of its own:
-- Build: `pr-build.yml` builds the native core for macOS, Linux, Windows, iOS, Android and WASM on every PR
+- Build: `pr-build.yml` builds the native core for macOS, Linux, Windows, iOS, Android and WASM on PRs targeting `main`, `dev` or `feat/v2-architecture`
 - Release: `release.yml` builds the full artifact matrix on `v*.*.*` tags
